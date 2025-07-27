@@ -1,7 +1,7 @@
 {
   "name": "redirect-logger",
   "version": "1.0.0",
-  "description": "Educational IP and device logger with redirect",
+  "description": "Stealth redirect logger with Render logs output",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
