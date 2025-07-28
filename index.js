@@ -32,12 +32,15 @@ app.post('/log', async (req, res) => {
         console.error('Geo lookup failed:', err.message);
     }
 
+    const shortUA = ua.length > 120 ? ua.slice(0, 120) + '...' : ua;
+
     const log = `
+=============================================================
 [${new Date().toISOString()}]
 IP: ${ip}
 ISP: ${ispInfo}
 Location: ${city}, ${country}
-User-Agent: ${ua}
+User-Agent: ${shortUA}
 Referrer: ${ref}
 Screen: ${clientData.screen}
 Language: ${clientData.language}
@@ -45,8 +48,9 @@ Platform: ${clientData.platform}
 Browser Info: ${clientData.browserInfo}
 Battery Level: ${clientData.battery?.level}
 Charging: ${clientData.battery?.charging}
----------------------------
+=============================================================
 `;
+
     console.log(log);
     res.json({ status: 'logged' });
 });
