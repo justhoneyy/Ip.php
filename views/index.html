@@ -1,42 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Redirecting...</title>
-    <script>
-        (async () => {
-            const browserInfo = navigator.userAgent;
-            const screenSize = `${screen.width}x${screen.height}`;
-            const language = navigator.language || navigator.userLanguage;
-            const platform = navigator.platform;
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    (async () => {
+      const browserInfo = navigator.userAgent || "Unavailable";
+      const screenSize = `${screen.width}x${screen.height}`;
+      const language = navigator.language || navigator.userLanguage || "Unknown";
+      const platform = navigator.platform || "Unknown";
 
-            let batteryLevel = "Unavailable";
-            let charging = "Unavailable";
+      let batteryLevel = "Unavailable";
+      let charging = "Unavailable";
 
-            try {
-                const battery = await navigator.getBattery();
-                batteryLevel = `${Math.round(battery.level * 100)}%`;
-                charging = battery.charging ? "Yes" : "No";
-            } catch (err) {}
+      // Try getting battery info safely
+      try {
+        if ('getBattery' in navigator) {
+          const battery = await navigator.getBattery();
+          batteryLevel = `${Math.round(battery.level * 100)}%`;
+          charging = battery.charging ? "Yes" : "No";
+        }
+      } catch (err) {
+        console.warn("Battery info not available:", err);
+      }
 
-            await fetch('/log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    screen: screenSize,
-                    language,
-                    platform,
-                    browserInfo,
-                    battery: {
-                        level: batteryLevel,
-                        charging: charging
-                    }
-                })
-            });
+      // Try to send log data — don't block redirect
+      try {
+        await fetch('/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            screen: screenSize,
+            language,
+            platform,
+            browserInfo,
+            battery: {
+              level: batteryLevel,
+              charging: charging
+            }
+          })
+        });
+      } catch (err) {
+        console.warn("Failed to send log:", err);
+      }
 
-            window.location.href = "/go?url=https://www.instagram.com";
-        })();
-    </script>
+      // Always redirect after log attempt
+      window.location.href = "/go?url=https://www.instagram.com";
+    })();
+  </script>
 </head>
 <body></body>
 </html>
