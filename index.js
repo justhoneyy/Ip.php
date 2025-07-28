@@ -1,10 +1,7 @@
-/localhost:${PORT}`);
-});
-         
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const axios = require('axios');
+const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -22,10 +19,10 @@ app.post('/log', async (req, res) => {
     const ref = req.headers['referer'] || 'Direct';
     const clientData = req.body || {};
 
-    // Get ISP & location
     let ispInfo = 'Unknown ISP';
     let city = 'Unknown City';
     let country = 'Unknown Country';
+
     try {
         const geo = await axios.get(`http://ip-api.com/json/${ip}`);
         ispInfo = geo.data.isp || 'Unknown';
@@ -50,8 +47,6 @@ Battery Level: ${clientData.battery?.level}
 Charging: ${clientData.battery?.charging}
 ---------------------------
 `;
-
-    // ✅ Log to Render dashboard
     console.log(log);
     res.json({ status: 'logged' });
 });
@@ -67,4 +62,3 @@ app.get('/go', (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-        
