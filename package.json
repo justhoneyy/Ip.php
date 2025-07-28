@@ -1,7 +1,6 @@
 {
   "name": "redirect-logger",
   "version": "1.0.0",
-  "description": "Stealth redirect logger with Render logs output",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
